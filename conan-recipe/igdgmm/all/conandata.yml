@@ -1,0 +1,4 @@
+sources:
+  "22.1.2":
+    url: "https://github.com/intel/gmmlib/archive/refs/tags/intel-gmmlib-22.1.2.tar.gz"
+    sha256: "3b9a6d5e7e3f5748b3d0a2fb0e980ae943907fece0980bd9c0508e71c838e334"
