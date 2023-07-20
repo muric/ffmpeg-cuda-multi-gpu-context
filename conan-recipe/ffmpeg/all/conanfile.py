@@ -106,6 +106,7 @@ class FFMpegConan(ConanFile):
         "disable_all_filters": [True, False],
         "disable_filters": [None, "ANY"],
         "enable_filters": [None, "ANY"],
+        "disable_autodetect": [True,False],
         "with_cuda": [True,False],
     }
     default_options = {
@@ -184,6 +185,7 @@ class FFMpegConan(ConanFile):
         "disable_all_filters": False,
         "disable_filters": None,
         "enable_filters": None,
+        "disable_autodetect": False,
         "with_cuda": False,
     }
 
@@ -376,7 +378,7 @@ class FFMpegConan(ConanFile):
         # upgrade cuda compute, to disable warning of deprecated function
         if self.options.with_cuda:
             nvcc_compute = 'nvccflags_default="-gencode arch=compute_52,code=sm_52 -O2"'
-            replace_in_file(os.path.join(self._source_subfolder, 'configure'),
+            replace_in_file(self, os.path.join(self.source_folder, 'configure'),
                                   'nvccflags_default="-gencode arch=compute_30,code=sm_30 -O2"',
                                   '%s' % nvcc_compute)
             
@@ -389,12 +391,12 @@ class FFMpegConan(ConanFile):
                                   f"check_lib openssl openssl/ssl.h OPENSSL_init_ssl {openssl_libraries} || ")
 
         replace_in_file(self, os.path.join(self.source_folder, "configure"), "echo libx264.lib", "echo x264.lib") 
-        #if self.settings.os == "Linux":
-        #    if self.options.with_vaapi:
-        #       libva = self.dependencies["libva"]
-                #vaapi_libraries = self.deps_cpp_info["libva"].lib_paths
-        #       str_vaapi_libraries = ''.join(libva.cpp_info.libdirs)
-        #       self.run("cp -r %s/pkgconfig/* %s" % (str_vaapi_libraries, self.build_folder + "/conan"))
+        if self.settings.os == "Linux":
+            if self.options.with_vaapi:
+               libva = self.dependencies["libva"]
+               #vaapi_libraries = self.deps_cpp_info["libva"].lib_paths
+               str_vaapi_libraries = ''.join(libva.cpp_info.libdirs)
+               self.run("cp -r %s/pkgconfig/* %s" % (str_vaapi_libraries, self.build_folder + "/conan"))
 
     @property
     def _default_compilers(self):
@@ -595,6 +597,10 @@ class FFMpegConan(ConanFile):
             "--disable-cuda",
             "--disable-cuvid"
             ])
+        if not self.options.disable_autodetect:
+            args.append('--enable-autodetect')
+        else:
+            args.append('--disable-autodetect')
         if not self.options.with_programs:
             args.append("--disable-programs")
         # since ffmpeg"s build system ignores CC and CXX
@@ -998,8 +1004,8 @@ class FFMpegConan(ConanFile):
                 self.cpp_info.components["avfilter"].frameworks.append("Metal")
 
         if self.options.get_safe("with_vaapi"):
-            self.cpp_info.components["avutil"].requires.extend(
-                ["vaapi::vaapi", "xorg::x11"])
+            self.cpp_info.components["avutil"].requires.append(
+                ["vaapi::vaapi"])
 
         if self.options.get_safe("with_vdpau"):
             self.cpp_info.components["avutil"].requires.append("vdpau::vdpau")

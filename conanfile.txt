@@ -1,9 +1,6 @@
 [requires]
 ffmpeg/5.1@self-muradyan/stable
-libva/2.14@self-muradyan/stable
-media-driver/22.3.1@self-muradyan/stable
 ffnvcodec/n12.0.16.0@self-muradyan/stable
-libx264/cci.20220602
 [generators]
 cmake
 [options]
@@ -35,10 +32,12 @@ ffmpeg/*:protocols=True
 ffmpeg/*:network=True
 ffmpeg/*:outdev_sdl=False
 ffmpeg/*:nonfree=True
-ffmpeg/*:wiith_cuda=True
+ffmpeg/*:with_cuda=True
 ffmpeg/*:disable_autodetect=False
 ffmpeg/*:pthreads=True
 ffmpeg/*:vpx=True
 ffmpeg/*:qsv=False
 ffmpeg/*:with_vulkan=False
+ffmpeg/*:with_cuda=True
+ffmpeg/*:disable_autodetect=True
 media-driver/*:enable_kernels=True
