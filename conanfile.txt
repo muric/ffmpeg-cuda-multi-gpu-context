@@ -39,5 +39,9 @@ ffmpeg/*:vpx=True
 ffmpeg/*:qsv=False
 ffmpeg/*:with_vulkan=False
 ffmpeg/*:with_cuda=True
+<<<<<<< HEAD
 ffmpeg/*:disable_autodetect=False
+=======
+ffmpeg/*:disable_autodetect=True
+>>>>>>> b8331bff66ca2096e9a9f2aeb6bbe497afa89d17
 media-driver/*:enable_kernels=True
