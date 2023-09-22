@@ -1,0 +1,4 @@
+sources:
+  "22.3.1":
+    url: "https://github.com/intel/media-driver/archive/refs/tags/intel-media-22.3.1.tar.gz"
+    sha256: "0fdccad95a561178bd19fba69ab94be23bd4a3072e68aa18c3304c990d87d7d8"
