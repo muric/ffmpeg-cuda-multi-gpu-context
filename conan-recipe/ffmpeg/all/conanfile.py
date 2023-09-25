@@ -304,13 +304,13 @@ class FFMpegConan(ConanFile):
             self.requires("pulseaudio/14.2")
         if self.options.with_vaapi:
                 self.requires("libva/2.14@self-muradyan/stable")
-                self.requires("media-driver/22.3.1@self-muradyan/stable")
+                #self.requires("media-driver/22.3.1@self-muradyan/stable")
         if self.options.get_safe("with_vdpau"):
             self.requires("vdpau/system")
         if self._version_supports_vulkan and self.options.get_safe("with_vulkan"):
             self.requires("vulkan-loader/1.3.239.0")
         if self.options.with_cuda:
-                self.requires("ffnvcodec/12.0.16.0@self-muradyan/stable")
+            self.requires("ffnvcodec/12.0.16.0@self-muradyan/stable",visible=False)
 
     def validate(self):
         if self.options.with_ssl == "securetransport" and not is_apple_os(self):
@@ -381,7 +381,7 @@ class FFMpegConan(ConanFile):
             replace_in_file(self, os.path.join(self.source_folder, 'configure'),
                                   'nvccflags_default="-gencode arch=compute_30,code=sm_30 -O2"',
                                   '%s' % nvcc_compute)
-            
+
         if self.options.with_ssl == "openssl":
             # https://trac.ffmpeg.org/ticket/5675
             openssl_libraries = " ".join(
@@ -390,7 +390,7 @@ class FFMpegConan(ConanFile):
                                   "check_lib openssl openssl/ssl.h SSL_library_init -lssl -lcrypto -lws2_32 -lgdi32 ||",
                                   f"check_lib openssl openssl/ssl.h OPENSSL_init_ssl {openssl_libraries} || ")
 
-        replace_in_file(self, os.path.join(self.source_folder, "configure"), "echo libx264.lib", "echo x264.lib") 
+        replace_in_file(self, os.path.join(self.source_folder, "configure"), "echo libx264.lib", "echo x264.lib")
         if self.settings.os == "Linux":
             if self.options.with_vaapi:
                libva = self.dependencies["libva"]
@@ -1004,9 +1004,8 @@ class FFMpegConan(ConanFile):
                 self.cpp_info.components["avfilter"].frameworks.append("Metal")
 
         if self.options.get_safe("with_vaapi"):
-            self.cpp_info.components["avutil"].requires.append(
-                ["vaapi::vaapi"])
-
+            self.cpp_info.components["avutil"].requires.extend(
+                    ["libva::libva","xorg::x11"])
         if self.options.get_safe("with_vdpau"):
             self.cpp_info.components["avutil"].requires.append("vdpau::vdpau")
 

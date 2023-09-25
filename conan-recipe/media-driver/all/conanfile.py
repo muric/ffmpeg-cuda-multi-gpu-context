@@ -68,9 +68,12 @@ class MediaDriverConan(ConanFile):
         cmake.build()
 
     def package(self):
+        copy(self, "*.h", self.build_folder, os.path.join(self.package_folder + "/include/")) #copy headers
+        copy(self, "*.so", self.build_folder, os.path.join(self.package_folder + "/lib/"),keep_path=False) # copy shared lib
+        copy(self, "*.a", self.build_folder, os.path.join(self.package_folder + "lib/"),keep_path=False) # copy static lib
         #copy("*.h", dst="include", keep_path=False)
         #copy("*.so", dst="lib", keep_path=False)
-        #copy("*.la", dst="lib", keep_path=False)
+        #copy("*.a", dst="lib", keep_path=False)
         cmake = CMake(self)
         cmake.install()
         

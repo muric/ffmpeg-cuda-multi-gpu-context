@@ -10,9 +10,6 @@ class ffnvcodecConan(ConanFile):
     settings = "os", "compiler", "arch", "build_type"
     description = "Nvidia codec headers for ffmpeg"
     build_policy = "missing"
-
-#    def export_sources(self):
-#        export_conandata_patches(self)
     
     def source(self):
         git = Git(self)
@@ -25,8 +22,9 @@ class ffnvcodecConan(ConanFile):
 
     def package(self):
         copy(self, "*.h", self.build_folder, os.path.join(self.package_folder))
-        #copy(self, "*.pc", self.build_folder, os.path.join(self.package_folder, "lib/pkgconfig"))
 
     def package_info(self):
         self.cpp_info.includedirs = ["include"]
-        #self.cpp_info.libs = ["lib"]
+
+    def package_id(self):
+        self.info.clear()
