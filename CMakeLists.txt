@@ -34,6 +34,7 @@ add_compile_options(
 
 include(conan.cmake)
 conan_cmake_run(REQUIRES
+        spdlog/1.12.0
         ffmpeg/5.1.3@self-muradyan/stable
         libva/2.14@self-muradyan/stable
         media-driver/22.3.1@self-muradyan/stable

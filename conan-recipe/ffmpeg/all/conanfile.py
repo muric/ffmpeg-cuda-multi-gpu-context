@@ -108,6 +108,7 @@ class FFMpegConan(ConanFile):
         "enable_filters": [None, "ANY"],
         "disable_autodetect": [True,False],
         "with_cuda": [True,False],
+        "with_amf": [True,False],
     }
     default_options = {
         "shared": False,
@@ -187,6 +188,7 @@ class FFMpegConan(ConanFile):
         "enable_filters": None,
         "disable_autodetect": False,
         "with_cuda": False,
+        "with_amf": False,
     }
 
     @property
@@ -277,7 +279,7 @@ class FFMpegConan(ConanFile):
         if self.options.with_vorbis:
             self.requires("vorbis/1.3.7")
         if self.options.with_opus:
-            self.requires("opus/1.3.1")
+            self.requires("opus/1.4")
         if self.options.with_zeromq:
             self.requires("zeromq/4.3.4")
         if self.options.with_sdl:
@@ -297,7 +299,7 @@ class FFMpegConan(ConanFile):
         if self.options.with_ssl == "openssl":
             self.requires("openssl/[>=1.1 <4]")
         if self.options.get_safe("with_libalsa"):
-            self.requires("libalsa/1.2.7.2")
+            self.requires("libalsa/1.2.10")
         if self.options.get_safe("with_xcb") or self.options.get_safe("with_vaapi"):
             self.requires("xorg/system")
         if self.options.get_safe("with_pulse"):
@@ -311,6 +313,8 @@ class FFMpegConan(ConanFile):
             self.requires("vulkan-loader/1.3.239.0")
         if self.options.with_cuda:
             self.requires("ffnvcodec/12.0.16.0@self-muradyan/stable",visible=False)
+        if self.options.with_amf:
+            self.requires("amf/v1.4.30@self-muradyan/stable",visible=False)
 
     def validate(self):
         if self.options.with_ssl == "securetransport" and not is_apple_os(self):
@@ -504,8 +508,7 @@ class FFMpegConan(ConanFile):
                 "videotoolbox", self.options.get_safe("with_videotoolbox")),
             opt_enable_disable("securetransport",
                                self.options.with_ssl == "securetransport"),
-            #"--disable-cuda",  # FIXME: CUDA support
-            #"--disable-cuvid",  # FIXME: CUVID support
+            opt_enable_disable("amf", self.options.get_safe("with_amf")),
             # Licenses
             opt_enable_disable("nonfree", self.options.with_libfdk_aac or (self.options.with_ssl and (
                 self.options.with_libx264 or self.options.with_libx265 or self.options.postproc))),
