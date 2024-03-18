@@ -1,9 +1,16 @@
 [requires]
+amf/v1.4.30@self-muradyan/stable
+libx265/3.4
+opus/1.4
+libsndfile/1.2.2
 ffmpeg/5.1@self-muradyan/stable
 ffnvcodec/12.0.16.0@self-muradyan/stable
+media-driver/22.3.1@self-muradyan/stable
 [generators]
-cmake
+CMakeToolchain
+CMakeDeps
 [options]
+ffmpeg/*:with_programs=False
 ffmpeg/*:fPIC=True
 ffmpeg/*:shared=True
 ffmpeg/*:postproc=False
@@ -39,9 +46,6 @@ ffmpeg/*:vpx=True
 ffmpeg/*:qsv=False
 ffmpeg/*:with_vulkan=False
 ffmpeg/*:with_cuda=True
-<<<<<<< HEAD
+ffmpeg/*:with_amf=True
 ffmpeg/*:disable_autodetect=False
-=======
-ffmpeg/*:disable_autodetect=True
->>>>>>> b8331bff66ca2096e9a9f2aeb6bbe497afa89d17
 media-driver/*:enable_kernels=True

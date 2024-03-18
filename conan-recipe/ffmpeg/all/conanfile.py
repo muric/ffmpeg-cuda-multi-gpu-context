@@ -141,7 +141,7 @@ class FFMpegConan(ConanFile):
         "with_ssl": "openssl",
         "with_libalsa": True,
         "with_pulse": True,
-        "with_vaapi": True,
+        "with_vaapi": False,
         "with_vdpau": True,
         "with_vulkan": True,
         "with_xcb": True,
@@ -241,6 +241,7 @@ class FFMpegConan(ConanFile):
             del self.options.with_xcb
             del self.options.with_libalsa
             del self.options.with_pulse
+            del self.options.with_cuda
         if self.settings.os != "Macos":
             del self.options.with_appkit
         if self.settings.os not in ["Macos", "iOS", "tvOS"]:
@@ -304,15 +305,17 @@ class FFMpegConan(ConanFile):
             self.requires("xorg/system")
         if self.options.get_safe("with_pulse"):
             self.requires("pulseaudio/14.2")
-        if self.options.with_vaapi:
-                self.requires("libva/2.14@self-muradyan/stable")
-                #self.requires("media-driver/22.3.1@self-muradyan/stable")
+        if self.settings.os == "Linux":
+            if self.options.with_vaapi:
+                    self.requires("libva/2.14@self-muradyan/stable")
+                    #self.requires("media-driver/22.3.1@self-muradyan/stable")
         if self.options.get_safe("with_vdpau"):
             self.requires("vdpau/system")
         if self._version_supports_vulkan and self.options.get_safe("with_vulkan"):
             self.requires("vulkan-loader/1.3.239.0")
-        if self.options.with_cuda:
-            self.requires("ffnvcodec/12.0.16.0@self-muradyan/stable",visible=False)
+        if self.settings.os not in ["Macos", "iOS", "tvOS"]:
+            if self.options.with_cuda:
+                self.requires("ffnvcodec/12.0.16.0@self-muradyan/stable",visible=False)
         if self.options.with_amf:
             self.requires("amf/v1.4.30@self-muradyan/stable",visible=False)
 

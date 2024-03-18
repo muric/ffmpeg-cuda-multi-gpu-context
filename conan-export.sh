@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-cd conan-recipe/ffmpeg/all
+cd conan-recipe/amf/all
+conan export .  --name amf --version v1.4.30 --channel stable --user self-muradyan
+cd ../../ffmpeg/all
 conan export .  --name ffmpeg --version 5.1 --channel stable --user self-muradyan
 cd ../../ffnvcodec/all
 conan export .  --name ffnvcodec --version 12.0.16.0 --channel stable --user self-muradyan
