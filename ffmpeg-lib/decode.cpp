@@ -9,8 +9,7 @@
 #define INBUF_SIZE 4096
 
 static void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize,
-                     char *filename)
-{
+                     char *filename){
     FILE *f;
     int i;
     f = fopen(filename,"w");
@@ -19,9 +18,9 @@ static void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize,
         fwrite(buf + i * wrap, 1, xsize, f);
     fclose(f);
 }
+
 static int decode_write_frame(const char *outfilename, AVCodecContext *avctx,
-                              AVFrame *frame, int *frame_count, AVPacket *pkt, int last)
-{
+                              AVFrame *frame, int *frame_count, AVPacket *pkt, int last){
     int len, got_frame;
     char buf[1024];
     len = avcodec_decode_video2(avctx, frame, &got_frame, pkt);
@@ -30,7 +29,7 @@ static int decode_write_frame(const char *outfilename, AVCodecContext *avctx,
         return len;
     }
     if (got_frame) {
-        printf("Saving %sframe %3d\n", last ? "last " : "", *frame_count);
+        sdplog::info("Saving %sframe %3d\n", last ? "last " : "", *frame_count);
         fflush(stdout);
         /* the picture is allocated by the decoder, no need to free it */
         snprintf(buf, sizeof(buf), "%s-%d", outfilename, *frame_count);
@@ -44,8 +43,8 @@ static int decode_write_frame(const char *outfilename, AVCodecContext *avctx,
     }
     return 0;
 }
-int main(int argc, char **argv)
-{
+
+int main(int argc, char **argv){
     const char *filename, *outfilename;
     const AVCodec *codec;
     AVCodecContext *c= NULL;
@@ -64,7 +63,7 @@ int main(int argc, char **argv)
     av_init_packet(&avpkt);
     codec = avcodec_find_decoder_by_name("h264_cuvid");
     if (!codec) {
-        fprintf(stderr, "Codec not found\n");
+        sdplog::critical(stderr, "Codec not found\n");
         exit(1);
     }
     gpu_type = av_hwdevice_find_type_by_name("cuda");
@@ -79,10 +78,12 @@ int main(int argc, char **argv)
     CUresult cu_ret;
     enum AVPixelFormat hw_pix_fmt;
     AVHWDeviceContext device_ctx;
+    AVBufferRef *hw_device_ctx;
 
     dev_num = 0; //set cuda device
 
     hw_dev_ctx = av_hwdevice_ctx_alloc(gpu_type);
+
     video_ctx->hw_frames_ctx = av_hwframe_ctx_alloc(hw_dev_ctx);
     cu_dec_ctx = (AVCUDADeviceContext *)((AVHWDeviceContext *)hw_dev_ctx->data)->hwctx;
 
@@ -100,8 +101,9 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    if (codec->capabilities & AV_CODEC_CAP_TRUNCATED)
+    if (codec->capabilities & AV_CODEC_CAP_TRUNCATED){
         c->flags |= AV_CODEC_FLAG_TRUNCATED; // we do not send complete frames
+    }
     if (avcodec_open2(c, codec, NULL) < 0) {
         sdplog::critical(stderr, "Could not open codec\n");
         return -1;
